@@ -1,0 +1,6 @@
+# File konfigurasi
+config.py
+
+# Direktori yang tidak perlu diikutsertakan
+venv/
+__pycache__/
