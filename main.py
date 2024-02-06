@@ -3,6 +3,8 @@ from telegram.ext import CommandHandler, Updater
 import paramiko
 import config
 
+MAX_MESSAGE_LENGTH = 4096
+
 def start(update, context):
     update.message.reply_text("Bot telah diaktifkan!")
 
@@ -23,7 +25,16 @@ def run_script(update, context):
 
         # Baca output dari script dan kirim sebagai pesan
         script_output = stdout.read().decode("utf-8")
-        update.message.reply_text(f"Output dari script:\n{script_output}")
+        script_error = stderr.read().decode("utf-8")
+
+        if script_error:
+            update.message.reply_text(f"Terjadi kesalahan saat menjalankan script:\n{script_error}")
+        else:
+            update.message.reply_text(f"Output dari script:\n{script_output}")
+
+        while script_output:
+            update.message.reply_text(script_output[:MAX_MESSAGE_LENGTH])
+            script_output = script_output[MAX_MESSAGE_LENGTH:]
 
         # Tutup koneksi SSH
         ssh_client.close()
